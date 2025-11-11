@@ -7,9 +7,15 @@ import {
   LockClosedIcon,
 } from "@radix-ui/react-icons";
 import { useForm, Controller } from "react-hook-form";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function SignupForm() {
+  const [serverError, setServerError] = useState("");
+  const router = useRouter()
+
   const {
     handleSubmit,
     control,
@@ -19,15 +25,28 @@ function SignupForm() {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data)
-
-    const res = await axios.post('/api/auth/register', data)
-    console.log(res);
+    try {
+      await axios.post("/api/auth/register", data);
+      const signInRes = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+      if (signInRes?.ok) router.push('/dashboard')
+    } catch (error) {
+      if (error instanceof AxiosError && error.response)
+        setServerError(error.response.data.error);
+    }
   });
 
   return (
     <form onSubmit={onSubmit}>
       <Flex direction={"column"} gap={"2"}>
+        {serverError && (
+          <Text color="red" size={"2"}>
+            {serverError}
+          </Text>
+        )}
         <label htmlFor="username">Username</label>
         <Controller
           control={control}
@@ -69,6 +88,10 @@ function SignupForm() {
               id="email"
               type="email"
               placeholder="email@domain.com"
+              onChange={(e) => {
+                field.onChange(e);
+                if (serverError) setServerError("");
+              }}
             >
               <TextField.Slot>
                 <EnvelopeClosedIcon height={"16"} width={"16"} />

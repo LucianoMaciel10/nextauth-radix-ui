@@ -3,8 +3,20 @@
 import { Button, Flex, Text, TextField } from "@radix-ui/themes";
 import { EnvelopeClosedIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import { useForm, Controller } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function SigninForm() {
+  const [serverError, setServerError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!serverError) return; 
+    const timeout = setTimeout(() => setServerError(""), 3000);
+    return () => clearTimeout(timeout); 
+  }, [serverError]);
+
   const {
     control,
     handleSubmit,
@@ -13,11 +25,24 @@ function SigninForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = handleSubmit(async (data) => {
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+    });
+    if (!res?.ok && res?.error) return setServerError(res.error);
+    router.push("/dashboard");
+  });
 
   return (
     <form onSubmit={onSubmit}>
       <Flex direction={"column"} gap={"2"}>
+        {serverError && (
+          <Text color="red" size={"2"}>
+            {serverError}
+          </Text>
+        )}
         <label htmlFor="email">Email</label>
         <Controller
           name="email"
@@ -37,14 +62,21 @@ function SigninForm() {
             </TextField.Root>
           )}
         />
-        {errors.email && <Text color="red" size={'2'}>{errors.email.message}</Text>}
+        {errors.email && (
+          <Text color="red" size={"2"}>
+            {errors.email.message}
+          </Text>
+        )}
         <label htmlFor="password">Password</label>
         <Controller
           name="password"
           control={control}
           rules={{
             required: { message: "Password is required", value: true },
-            minLength: { message: "Password must be at least 6 characters", value: 6 },
+            minLength: {
+              message: "Password must be at least 6 characters",
+              value: 6,
+            },
           }}
           render={({ field }) => (
             <TextField.Root
@@ -59,8 +91,12 @@ function SigninForm() {
             </TextField.Root>
           )}
         />
-        {errors.password && <Text color="red" size={'2'}>{errors.password.message}</Text>}
-        <Button mt={'2'}>Sign In</Button>
+        {errors.password && (
+          <Text color="red" size={"2"}>
+            {errors.password.message}
+          </Text>
+        )}
+        <Button mt={"2"}>Sign In</Button>
       </Flex>
     </form>
   );
