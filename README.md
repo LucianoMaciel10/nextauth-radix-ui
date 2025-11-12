@@ -4,7 +4,7 @@ A modern full-stack web application for managing projects with user authenticati
 
 ## Tech Stack
 
-- **Frontend:** Next.js 15 (App Router), React, Tailwind CSS, Radix UI
+- **Frontend:** Next.js 16 (App Router), React, Tailwind CSS, Radix UI
 - **Backend:** Next.js API Routes, Prisma ORM
 - **Database:** PostgreSQL
 - **Authentication:** NextAuth.js
