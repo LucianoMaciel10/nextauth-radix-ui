@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckIcon, TrashIcon } from "@radix-ui/react-icons";
 import {
   Button,
   Card,
@@ -11,12 +12,13 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 function ProjectNewPage() {
-  const router = useRouter()
+  const params = useParams();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
@@ -30,8 +32,12 @@ function ProjectNewPage() {
     setIsLoading(true);
 
     try {
-      await axios.post("/api/projects", data);
-      router.push('/dashboard')
+      if (!params.projectId) {
+        await axios.post("/api/projects", data);
+      } else {
+        await axios.put(`/api/projects/${params.projectId}`, data);
+      }
+      router.push("/dashboard");
     } catch (error) {
       console.log(error);
     } finally {
@@ -44,7 +50,7 @@ function ProjectNewPage() {
       <Flex className="h-screen w-full items-center">
         <Card className="w-full" size={"4"}>
           <Heading mb={"2"} className="text-center">
-            Create New Project
+            {params.projectId ? "Edit Project" : "New Project"}
           </Heading>
           <form onSubmit={onSubmit}>
             <Flex direction={"column"} gap={"2"}>
@@ -85,9 +91,16 @@ function ProjectNewPage() {
               {errors.description && (
                 <Text color="red">{errors.description.message}</Text>
               )}
-              <Button size={'3'} loading={isLoading} mt={"2"}>
-                Create Project
+              <Button color="jade" size={"3"} loading={isLoading} mt={"2"}>
+                <CheckIcon className="size-5" />
+                {params.projectId ? "Save" : "Create"}
               </Button>
+              {params.projectId && (
+                <Button color="ruby" size={"3"} mt={"2"}>
+                  <TrashIcon className="size-4" />
+                  Delete
+                </Button>
+              )}
             </Flex>
           </form>
         </Card>

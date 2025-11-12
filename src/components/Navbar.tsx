@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Link as RadixLink } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { ExitIcon, GearIcon, PersonIcon } from "@radix-ui/react-icons";
 
 function Navbar() {
   const pathname = usePathname();
@@ -19,7 +20,10 @@ function Navbar() {
   return (
     <nav
       className={`bg-zinc-950 px-8 py-4 w-full ${
-        (pathname.includes("auth") || pathname.includes('new')) && "fixed top-0"
+        (pathname.includes("auth") ||
+          pathname.includes("new") ||
+          pathname.includes("projects/")) &&
+        "fixed top-0"
       }`}
     >
       <Container>
@@ -38,16 +42,23 @@ function Navbar() {
                 <li>
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
-                      <Button variant="soft">
+                      <Button variant="surface">
                         {session?.user?.name}
                         <DropdownMenu.TriggerIcon />
                       </Button>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
-                      <DropdownMenu.Item>My Profile</DropdownMenu.Item>
-                      <DropdownMenu.Item>Settings</DropdownMenu.Item>
+                      <DropdownMenu.Item>
+                        <PersonIcon />
+                        My Profile
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item>
+                        <GearIcon />
+                        Settings
+                      </DropdownMenu.Item>
                       <DropdownMenu.Separator />
                       <DropdownMenu.Item color="red" onClick={() => signOut()}>
+                        <ExitIcon />
                         Logout
                       </DropdownMenu.Item>
                     </DropdownMenu.Content>
