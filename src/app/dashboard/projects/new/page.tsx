@@ -13,8 +13,9 @@ import {
 } from "@radix-ui/themes";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { toast } from "sonner";
 
 function ProjectNewPage() {
   const params = useParams();
@@ -23,6 +24,7 @@ function ProjectNewPage() {
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: { title: "", description: "" },
@@ -45,8 +47,23 @@ function ProjectNewPage() {
     }
   });
 
+  const handleDelete = async (projectId: string) => {
+    const res = await axios.delete(`/api/projects/${projectId}`);
+    if (res.status === 200) toast.success("Project deleted successfully");
+    router.push("/dashboard");
+  };
+
+  useEffect(() => {
+    if (params.projectId) {
+      axios.get(`/api/projects/${params.projectId}`).then((res) => {
+        setValue("title", res.data.title);
+        setValue("description", res.data.description);
+      });
+    }
+  }, []);
+
   return (
-    <Container size="1" height="100%" className="p-3 md:p-0">
+    <Container size="1" height="100%" className="px-4 md:px-0">
       <Flex className="h-screen w-full items-center">
         <Card className="w-full" size={"4"}>
           <Heading mb={"2"} className="text-center">
@@ -95,14 +112,21 @@ function ProjectNewPage() {
                 <CheckIcon className="size-5" />
                 {params.projectId ? "Save" : "Create"}
               </Button>
-              {params.projectId && (
-                <Button color="ruby" size={"3"} mt={"2"}>
-                  <TrashIcon className="size-4" />
-                  Delete
-                </Button>
-              )}
             </Flex>
           </form>
+          {params.projectId && (
+            <Flex mt={"2"} justify={"end"}>
+              <Button
+                onClick={() => handleDelete(params.projectId as string)}
+                color="ruby"
+                size={"3"}
+                mt={"2"}
+              >
+                <TrashIcon className="size-4" />
+                Delete
+              </Button>
+            </Flex>
+          )}
         </Card>
       </Flex>
     </Container>

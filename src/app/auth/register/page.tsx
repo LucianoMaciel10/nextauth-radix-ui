@@ -12,7 +12,7 @@ import Link from "next/link";
 function RegisterPage() {
   return (
     <>
-      <Container size="1" height="100%" className="p-3 md:p-0">
+      <Container size="1" height="100%" className="px-4 md:px-0">
         <Flex className="h-screen w-full items-center">
           <Card className="w-full" size={"4"}>
             <Heading className="text-center">Sign Up</Heading>

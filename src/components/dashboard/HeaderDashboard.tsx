@@ -7,7 +7,7 @@ function HeaderDashboard() {
   const router = useRouter();
 
   return (
-    <Flex align={'center'} mb={'4'} justify={"between"}>
+    <Flex align={'center'} mb={'4'} justify={"between"} className="gap-x-3 sm:gap-x-0">
       <Heading>Projects</Heading>
       <Button onClick={() => router.push("/dashboard/projects/new")}>
         Add Project
