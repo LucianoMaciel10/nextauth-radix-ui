@@ -10,10 +10,13 @@ import {
   TextArea,
   TextField,
 } from "@radix-ui/themes";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
-function TaskNewPage() {
+function ProjectNewPage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
@@ -23,11 +26,12 @@ function TaskNewPage() {
     defaultValues: { title: "", description: "" },
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit(async (data) => {
     setIsLoading(true);
 
     try {
-      console.log(data);
+      await axios.post("/api/projects", data);
+      router.push('/dashboard')
     } catch (error) {
       console.log(error);
     } finally {
@@ -81,7 +85,7 @@ function TaskNewPage() {
               {errors.description && (
                 <Text color="red">{errors.description.message}</Text>
               )}
-              <Button loading={isLoading} mt={"2"}>
+              <Button size={'3'} loading={isLoading} mt={"2"}>
                 Create Project
               </Button>
             </Flex>
@@ -92,4 +96,4 @@ function TaskNewPage() {
   );
 }
 
-export default TaskNewPage;
+export default ProjectNewPage;
