@@ -14,7 +14,8 @@ import { useRouter } from "next/navigation";
 
 function SignupForm() {
   const [serverError, setServerError] = useState("");
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     handleSubmit,
@@ -25,6 +26,8 @@ function SignupForm() {
   });
 
   const onSubmit = handleSubmit(async (data) => {
+    setIsLoading(true);
+
     try {
       await axios.post("/api/auth/register", data);
       const signInRes = await signIn("credentials", {
@@ -32,10 +35,12 @@ function SignupForm() {
         email: data.email,
         password: data.password,
       });
-      if (signInRes?.ok) router.push('/dashboard')
+      if (signInRes?.ok) router.push("/dashboard");
     } catch (error) {
       if (error instanceof AxiosError && error.response)
         setServerError(error.response.data.error);
+    } finally {
+      setIsLoading(false);
     }
   });
 
@@ -58,6 +63,7 @@ function SignupForm() {
               id="username"
               type="text"
               placeholder="Jhon Doe"
+              size={"3"}
               autoFocus
             >
               <TextField.Slot>
@@ -86,6 +92,7 @@ function SignupForm() {
             <TextField.Root
               {...field}
               id="email"
+              size={"3"}
               type="email"
               placeholder="email@domain.com"
               onChange={(e) => {
@@ -120,6 +127,7 @@ function SignupForm() {
               {...field}
               id="password"
               type="password"
+              size={"3"}
               placeholder="********"
             >
               <TextField.Slot>
@@ -133,7 +141,7 @@ function SignupForm() {
             {errors.password.message}
           </Text>
         )}
-        <Button>Sign Up</Button>
+        <Button size={"3"} loading={isLoading}>Sign Up</Button>
       </Flex>
     </form>
   );

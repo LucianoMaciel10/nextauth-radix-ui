@@ -8,11 +8,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid()) 
-  email     String   @unique
-  username  String   
+  id        String    @id @default(cuid())
+  email     String    @unique
+  username  String
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@map("users") 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("projects")
 }

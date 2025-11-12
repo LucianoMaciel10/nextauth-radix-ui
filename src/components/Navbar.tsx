@@ -19,7 +19,7 @@ function Navbar() {
   return (
     <nav
       className={`bg-zinc-950 px-8 py-4 w-full ${
-        !pathname.includes("dashboard") && pathname !== "/" && "fixed top-0"
+        (pathname.includes("auth") || pathname.includes('new')) && "fixed top-0"
       }`}
     >
       <Container>

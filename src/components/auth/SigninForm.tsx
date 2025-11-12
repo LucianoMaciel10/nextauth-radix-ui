@@ -9,12 +9,13 @@ import { useEffect, useState } from "react";
 
 function SigninForm() {
   const [serverError, setServerError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (!serverError) return; 
+    if (!serverError) return;
     const timeout = setTimeout(() => setServerError(""), 3000);
-    return () => clearTimeout(timeout); 
+    return () => clearTimeout(timeout);
   }, [serverError]);
 
   const {
@@ -26,13 +27,21 @@ function SigninForm() {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
-    if (!res?.ok && res?.error) return setServerError(res.error);
-    router.push("/dashboard");
+    setIsLoading(true)
+
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+      if (!res?.ok && res?.error) return setServerError(res.error);
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false)
+    }
   });
 
   return (
@@ -55,6 +64,7 @@ function SigninForm() {
               placeholder="email@domain.com"
               autoFocus
               {...field}
+              size={"3"}
             >
               <TextField.Slot>
                 <EnvelopeClosedIcon height={"16"} width={"16"} />
@@ -80,6 +90,7 @@ function SigninForm() {
           }}
           render={({ field }) => (
             <TextField.Root
+              size={"3"}
               id="password"
               type="password"
               placeholder="********"
@@ -96,7 +107,9 @@ function SigninForm() {
             {errors.password.message}
           </Text>
         )}
-        <Button mt={"2"}>Sign In</Button>
+        <Button mt={"2"} size={"3"} loading={isLoading}>
+          Sign In
+        </Button>
       </Flex>
     </form>
   );
