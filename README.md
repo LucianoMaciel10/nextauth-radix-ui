@@ -19,10 +19,8 @@ A modern full-stack web application for managing projects with user authenticati
 - 🔒 Protected routes and API endpoints
 - 💾 PostgreSQL database with Prisma ORM
 
-## Getting Started
+## Live Demo
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Set up environment variables (`.env`)
-4. Run migrations: `npx prisma migrate dev`
-5. Start dev server: `npm run dev`
+🚀 [View Live Application](https://nextauth-radix-ui-production.up.railway.app/)
+
+*Deployed on Railway with continuous deployment from the main branch.*
